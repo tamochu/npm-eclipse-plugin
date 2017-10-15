@@ -4,67 +4,25 @@
 
    <extension
          point="org.eclipse.ui.commands">
-      <category
-            name="サンプル・カテゴリー"
-            id="npm-plugin.commands.category">
-      </category>
       <command
-            name="サンプル・コマンド"
-            categoryId="npm-plugin.commands.category"
-            id="npm-plugin.commands.sampleCommand">
-      </command>
-      <command
-            id="npm-plugin.commands.testCommand"
-            name="テスト">
+            id="npm-plugin.commands.npmCommand"
+            name="npm実行">
+         <commandParameter
+               id="npm-plugin.commandParameter"
+               name="cmd"
+               optional="true">
+         </commandParameter>
       </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
       <handler
-            commandId="npm-plugin.commands.sampleCommand"
-            class="test.handlers.SampleHandler">
+            class="com.ecb.tamochu.plugins.eclipse.npm.handlers.BasicCommandHandler"
+            commandId="npm-plugin.commands.npmCommand">
       </handler>
-      <handler
-            class="com.ecb.tamochu.plugins.eclipse.npm.handlers.TestHandler"
-            commandId="npm-plugin.commands.testCommand">
-      </handler>
-   </extension>
-   <extension
-         point="org.eclipse.ui.bindings">
-      <key
-            commandId="npm-plugin.commands.sampleCommand"
-            contextId="org.eclipse.ui.contexts.window"
-            sequence="M1+6"
-            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
-      </key>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
-      <menuContribution
-            locationURI="menu:org.eclipse.ui.main.menu?after=additions">
-         <menu
-               label="サンプル・メニュー"
-               mnemonic="M"
-               id="npm-plugin.menus.sampleMenu">
-            <command
-                  commandId="npm-plugin.commands.sampleCommand"
-                  mnemonic="S"
-                  id="npm-plugin.menus.sampleCommand">
-            </command>
-         </menu>
-      </menuContribution>
-      <menuContribution
-            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
-         <toolbar
-               id="npm-plugin.toolbars.sampleToolbar">
-            <command
-                  commandId="npm-plugin.commands.sampleCommand"
-                  icon="icons/sample.png"
-                  tooltip="Say hello world"
-                  id="npm-plugin.toolbars.sampleCommand">
-            </command>
-         </toolbar>
-      </menuContribution>
       <menuContribution
             locationURI="popup:org.eclipse.ui.popup.any?after=additions">
          <menu
@@ -72,9 +30,10 @@
                label="npm"
                mnemonic="N">
             <command
-                  commandId="npm-plugin.commands.testCommand"
-                  id="npm-plugin.menus.testCommand"
-                  mnemonic="T"
+                  commandId="npm-plugin.commands.npmCommand"
+                  id="npm-plugin.menus.npmCommand"
+                  label="help"
+                  mnemonic="H"
                   style="push">
                <visibleWhen
                      checkEnabled="false">
@@ -91,6 +50,10 @@
                      </count>
                   </with>
                </visibleWhen>
+               <parameter
+                     name="npm-plugin.commandParameter"
+                     value="help">
+               </parameter>
             </command>
          </menu>
       </menuContribution>

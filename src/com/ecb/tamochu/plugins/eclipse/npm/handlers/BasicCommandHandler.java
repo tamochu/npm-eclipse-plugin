@@ -1,5 +1,7 @@
 package com.ecb.tamochu.plugins.eclipse.npm.handlers;
 
+import java.io.File;
+
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -27,13 +29,11 @@ import com.ecb.tamochu.plugins.eclipse.npm.utils.NpmUtil;
  * @see org.eclipse.core.commands.IHandler
  * @see org.eclipse.core.commands.AbstractHandler
  */
-public class TestHandler extends AbstractHandler {
+public class BasicCommandHandler extends AbstractHandler {
 	final String CONSOLE_NAME = "npm-console";
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		String npmPath = Activator.getDefault().getPreferenceStore().getString(INpmConstants.NPM_PATH);
-
 		IProject proj = NpmUtil.getPrjoect(event);
 		ConsolePlugin consolePlugin = ConsolePlugin.getDefault();
 		IConsoleManager consoleManager = consolePlugin.getConsoleManager();
@@ -53,13 +53,14 @@ public class TestHandler extends AbstractHandler {
 		final MessageConsoleStream out = console.newMessageStream();
 
 		try {
-			Process rawProc = DebugPlugin.exec(new String[] {npmPath + "\\npm.cmd", "--version"}, proj.getLocation().toFile());
+
+			Process rawProc = DebugPlugin.exec(createCmd(event), proj.getLocation().toFile());
 
 			IProcess proc = DebugPlugin.newProcess(new Launch(null, ILaunchManager.RUN_MODE, null), rawProc, null);
 			proc.getStreamsProxy().getOutputStreamMonitor().addListener(new IStreamListener() {
 				@Override
 				public void streamAppended(String text, IStreamMonitor monitor) {
-					System.out.println(NpmUtil.getEncodingFromString(text));
+//					System.out.println(NpmUtil.getEncodingFromString(text));
 					out.println(text);
 				}
 			});
@@ -68,5 +69,21 @@ public class TestHandler extends AbstractHandler {
 		}
 
 		return null;
+	}
+
+	private String[] createCmd(ExecutionEvent event) {
+		String npmPath = Activator.getDefault().getPreferenceStore().getString(INpmConstants.NPM_PATH);
+		String[] cmd;
+
+		String[] rawCmds = event.getParameter("npm-plugin.commandParameter").split(":::");
+
+		cmd = new String[rawCmds.length + 1];
+
+		cmd[0] = npmPath + File.separator + "npm.cmd";
+		for (int i = 0; i < rawCmds.length; i++) {
+			cmd[i + 1] = rawCmds[i];
+		}
+
+		return cmd;
 	}
 }
